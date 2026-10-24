@@ -1052,6 +1052,35 @@
 
         .copy-notification.show { transform: translateX(-50%) translateY(0); }
 
+        /* Bouton retour en haut : visible uniquement près de la fin de page */
+        #back-to-top {
+            position: fixed;
+            right: max(18px, env(safe-area-inset-right));
+            bottom: max(22px, env(safe-area-inset-bottom));
+            z-index: 5000;
+            width: 50px;
+            height: 50px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(196,181,253,.85);
+            border-radius: 50%;
+            color: #fff;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            box-shadow: 0 5px 22px rgba(99,102,241,.45);
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: opacity .25s ease, transform .25s ease, visibility .25s;
+        }
+        #back-to-top.is-visible { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); animation: backTopBlink 1.15s ease-in-out infinite; }
+        #back-to-top:focus-visible { outline: 3px solid #ddd6fe; outline-offset: 4px; }
+        @keyframes backTopBlink { 0%,100% { box-shadow: 0 5px 18px rgba(99,102,241,.38); } 50% { box-shadow: 0 0 0 7px rgba(167,139,250,.16), 0 5px 28px rgba(139,92,246,.75); } }
+        @media (prefers-reduced-motion: reduce) { #back-to-top.is-visible { animation: none; } }
+        @media(max-width:600px) { #back-to-top { width:46px; height:46px; right:14px; bottom:max(16px, env(safe-area-inset-bottom)); } }
+
         /* --- FOOTER --- */
         footer {
             position: relative;
@@ -1105,7 +1134,14 @@
             .hero-buttons { flex-direction: column; }
             .btn-primary, .btn-secondary { width: 100%; }
         }
-    
+
+        .footer-copyright { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; max-width:1050px; margin:0 auto; }
+        .footer-brand-mark { display:inline-flex; align-items:center; gap:8px; flex:0 0 auto; padding:7px 11px; border:1px solid rgba(167,139,250,.48); border-radius:10px; color:#fff; background:linear-gradient(135deg,rgba(99,102,241,.22),rgba(139,92,246,.12)); box-shadow:0 0 16px rgba(99,102,241,.12); font-size:.9rem; letter-spacing:.3px; }
+        .footer-brand-mark i { color:#c4b5fd; font-size:1rem; }
+        .footer-brand-mark strong { font-weight:800; }
+        .footer-brand-mark strong span { color:#a5b4fc; }
+        .footer-copyright > span:last-child { min-width:0; }
+
 /* Applications compatibles : sélection courte et logos d'applications */
 .apps-section{max-width:1120px;margin:48px auto;padding:0 20px}
 .apps-intro{max-width:760px;color:var(--text-muted);line-height:1.6;margin:-8px 0 22px}
@@ -1135,6 +1171,68 @@
           header.header-compact .navbar { padding: 7px 10px; gap: 7px; }
           header.header-compact .nav-links { gap: 8px 12px; font-size: .74rem; }
           header.header-compact .announcement-bar { font-size: .58rem; letter-spacing: .2px; }
+        }
+
+
+
+        /* --- Correctifs responsive et fluidité PC / mobile --- */
+        img { max-width: 100%; }
+        img[loading="lazy"] { content-visibility: auto; }
+        .navbar { min-width: 0; }
+        .nav-links { min-width: 0; }
+        @media (max-width: 768px) {
+            header { width: 100%; }
+            .navbar {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                justify-content: center;
+                gap: 10px;
+                padding: 12px 12px 10px;
+                overflow: hidden;
+            }
+            .navbar .logo { align-self: center; font-size: 1.45rem; line-height: 1.25; }
+            .nav-links {
+                display: flex;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 8px;
+                width: 100%;
+                max-width: 100%;
+                overflow-x: auto;
+                overflow-y: hidden;
+                white-space: nowrap;
+                padding: 5px 2px 10px;
+                margin: 0;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior-x: contain;
+                scrollbar-width: thin;
+                scrollbar-color: rgba(168, 85, 247, .75) rgba(255,255,255,.08);
+                scroll-snap-type: x proximity;
+            }
+            .nav-links li { flex: 0 0 auto; white-space: nowrap; scroll-snap-align: start; }
+            .nav-links li, .nav-links a { min-height: 38px; display: inline-flex; align-items: center; }
+            .nav-trial-btn { display: inline-flex; align-items: center; min-height: 36px; padding: 7px 12px; }
+            .announcement-bar { font-size: .68rem; line-height: 1.4; padding: 7px 10px; letter-spacing: .2px; }
+            .hero-banner { margin-left: 12px; margin-right: 12px; }
+            .hero-banner h1 { font-size: clamp(1.65rem, 7vw, 2.35rem); overflow-wrap: anywhere; }
+            .hero-buttons { gap: 10px; }
+            .btn-primary, .btn-secondary { min-height: 46px; }
+            section, .catalog, .tutorial-section { scroll-margin-top: 18px; }
+            .motion-reveal { transition-duration: .25s !important; transition-delay: 0ms !important; transform: translateY(8px); }
+            .bg-slide { transition: none !important; transform: none !important; }
+            .bg-slide.active { transform: none !important; }
+            .glow-bg { animation: none !important; }
+        }
+        @media (max-width: 380px) {
+            .navbar .logo { font-size: 1.3rem; }
+            .nav-links { gap: 6px; font-size: .78rem; }
+            .nav-trial-btn { padding: 6px 9px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto !important; }
+            *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
         }
 
 </style>
@@ -1180,6 +1278,14 @@ button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{tr
         .hotplayer-choice input { position: absolute; top: 10px; left: 10px; width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
         .hotplayer-choice small { display: block; margin-top: 6px; color: var(--text-muted); font-size: .78rem; }
         .hotplayer-choice.selected { border-color: var(--accent) !important; box-shadow: 0 0 0 2px rgba(129,140,248,.2), 0 0 18px rgba(99,102,241,.12); }
+        .activation-app-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:18px 0 20px; }
+        .activation-app-choice { display:flex; align-items:center; gap:12px; padding:14px; border:1px solid var(--border); border-radius:14px; background:rgba(255,255,255,.025); cursor:pointer; text-align:left; transition:border-color .2s ease, box-shadow .2s ease, background .2s ease; }
+        .activation-app-choice.selected { border-color:var(--accent); background:rgba(99,102,241,.1); box-shadow:0 0 0 2px rgba(129,140,248,.18); }
+        .activation-app-choice input { accent-color:var(--accent); flex:0 0 auto; width:17px; height:17px; }
+        .activation-app-choice img { width:54px; height:54px; object-fit:contain; border-radius:10px; background:#fff; padding:4px; flex:0 0 54px; }
+        .activation-app-choice strong { display:block; color:#fff; }
+        .activation-app-choice small { display:block; margin-top:3px; color:var(--text-muted); font-size:.76rem; }
+        @media(max-width:520px){ .activation-app-options{grid-template-columns:1fr;gap:9px}.activation-app-choice{padding:11px}.activation-app-choice img{width:46px;height:46px;flex-basis:46px} }
         .hotplayer-main-btn { width: 100%; margin-top: 12px; }
         .hotplayer-summary-box { background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 14px; padding: 16px; text-align: left; }
         .hotplayer-summary-box > div { display: flex; flex-direction: column; gap: 4px; padding: 9px 0; border-bottom: 1px solid var(--border); }
@@ -1192,7 +1298,26 @@ button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{tr
         @media (max-width: 600px) { .review-client-meta { display: block !important; margin: 4px 0 0; } }
         .review-demo-label { display: none !important; }
         @media (max-width: 600px) { .review-client-meta { display: block; margin: 4px 0 0; } }
-</style>
+
+        /* Section épurée : appareils compatibles avec Hot Player */
+        .platforms-section{max-width:1120px;margin:48px auto 56px;padding:0 20px}
+        .platforms-heading{text-align:center;margin:0 auto 24px;max-width:720px}
+        .platforms-eyebrow{display:inline-flex;align-items:center;gap:8px;margin-bottom:10px;padding:6px 11px;border:1px solid rgba(129,140,248,.28);border-radius:999px;background:rgba(99,102,241,.09);color:#c4b5fd;font-size:.7rem;font-weight:800;letter-spacing:1.3px}
+        .platforms-heading .section-title{margin-bottom:7px}
+        .platforms-heading p{color:var(--text-muted);font-size:.9rem;line-height:1.6}
+        .platforms-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+        .platform-tile{min-width:0;min-height:116px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;padding:15px 10px;border:1px solid rgba(255,255,255,.09);border-radius:15px;background:linear-gradient(145deg,rgba(30,30,40,.82),rgba(18,18,26,.88));text-align:center;transition:border-color .2s ease,transform .2s ease,background .2s ease}
+        .platform-tile:hover{border-color:rgba(129,140,248,.48);transform:translateY(-2px);background:linear-gradient(145deg,rgba(40,38,62,.88),rgba(18,18,26,.92))}
+        .platform-logo{width:64px;height:48px;display:flex;align-items:center;justify-content:center}
+        .platform-logo img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
+        .platform-tile span{font-size:.78rem;font-weight:700;line-height:1.35;color:#f4f4f5}
+        .platforms-note{display:flex;align-items:flex-start;gap:9px;max-width:900px;margin:17px auto 0;padding:12px 15px;border:1px solid rgba(129,140,248,.17);border-radius:12px;background:rgba(99,102,241,.055);color:var(--text-muted);font-size:.76rem;line-height:1.55}
+        .platforms-note i{margin-top:3px;color:#a5b4fc;flex:0 0 auto}
+        @media(max-width:900px){.platforms-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+        @media(max-width:600px){.platforms-section{margin:36px auto 42px;padding:0 15px}.platforms-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.platform-tile{min-height:105px;padding:12px 8px;gap:8px}.platform-logo{width:58px;height:43px}.platform-tile span{font-size:.76rem}.platforms-note{font-size:.73rem;padding:11px 12px}}
+        @media(prefers-reduced-motion:reduce){.platform-tile{transition:none}.platform-tile:hover{transform:none}}
+
+    </style>
 
 </head>
 <body class="iptv-intro-lock">
@@ -1241,7 +1366,7 @@ button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{tr
             <h3 id="hotPlayerSummaryTitle">Récapitulatif de votre demande</h3>
             <p>Vérifiez votre choix avant de continuer vers WhatsApp.</p>
             <div class="hotplayer-summary-box">
-                <div><span>Service</span><strong>Licence de l’application Hot Player</strong></div>
+                <div><span>Application choisie</span><strong id="hotPlayerSummaryApp">Hot Player</strong></div>
                 <div><span>Formule choisie</span><strong id="hotPlayerSummaryPlan">Activation à vie</strong></div>
                 <div><span>Prix de la licence</span><strong id="hotPlayerSummaryPrice">20 € — paiement unique</strong></div>
                 <p>L’abonnement IPTV n’est pas inclus dans ce prix et reste à renouveler séparément selon votre commande.</p>
@@ -1356,6 +1481,28 @@ button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{tr
         <div class="apps-disclaimer"><strong>Important :</strong> les applications sont des lecteurs et ne fournissent pas elles-mêmes de chaînes. La disponibilité varie selon la marque, le modèle, le système et le pays. La configuration dépend aussi du format de vos identifiants (par exemple M3U ou Xtream Codes). Vérifiez que l’application choisie accepte le format fourni avec votre abonnement et utilisez uniquement des contenus auxquels vous avez légalement accès.</div>
     </section>
 
+    <!-- Disponibilité Hot Player sur les appareils -->
+    <section class="platforms-section" id="disponible-dans" aria-labelledby="platforms-title">
+        <div class="platforms-heading">
+            <span class="platforms-eyebrow"><i class="fa-solid fa-tv" aria-hidden="true"></i> COMPATIBILITÉ</span>
+            <h2 class="section-title" id="platforms-title">Disponible dans</h2>
+            <p>Retrouvez Hot Player sur de nombreux téléviseurs et appareils compatibles.</p>
+        </div>
+        <div class="platforms-grid">
+            <div class="platform-tile"><div class="platform-logo"><img src="https://hotplayer.app/system/samsung.png" alt="Logo Samsung" loading="lazy" decoding="async"></div><span>Samsung Smart TV</span></div>
+            <div class="platform-tile"><div class="platform-logo"><img src="https://hotplayer.app/system/lg.png" alt="Logo LG" loading="lazy" decoding="async"></div><span>LG webOS</span></div>
+            <div class="platform-tile"><div class="platform-logo"><img src="https://hotplayer.app/system/android.png" alt="Logo Android TV" loading="lazy" decoding="async"></div><span>Android TV</span></div>
+            <div class="platform-tile"><div class="platform-logo"><img src="https://hotplayer.app/system/firestick.png" alt="Logo Fire TV Stick" loading="lazy" decoding="async"></div><span>Amazon Fire TV Stick</span></div>
+            <div class="platform-tile"><div class="platform-logo"><img src="https://hotplayer.app/system/vidaa.png" alt="Logo VIDAA TV" loading="lazy" decoding="async"></div><span>VIDAA TV</span></div>
+            <div class="platform-tile"><div class="platform-logo"><img src="https://hotplayer.app/system/roku.png" alt="Logo Roku" loading="lazy" decoding="async"></div><span>Roku</span></div>
+            <div class="platform-tile"><div class="platform-logo"><img src="https://hotplayer.app/system/microsoft.png" alt="Logo Microsoft Store" loading="lazy" decoding="async"></div><span>Windows · Microsoft Store</span></div>
+            <div class="platform-tile"><div class="platform-logo"><img src="https://hotplayer.app/system/app-store.png" alt="Logo App Store" loading="lazy" decoding="async"></div><span>iPhone · iPad · App Store</span></div>
+            <div class="platform-tile"><div class="platform-logo"><img src="https://hotplayer.app/system/whaletv.png" alt="Logo Whale TV" loading="lazy" decoding="async"></div><span>Whale TV</span></div>
+            <div class="platform-tile"><div class="platform-logo"><img src="https://hotplayer.app/system/titanos.png" alt="Logo Titan OS" loading="lazy" decoding="async"></div><span>Titan OS</span></div>
+        </div>
+        <p class="platforms-note"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> La disponibilité peut varier selon le modèle, le système et la région. Vérifiez la présence de l’application dans le magasin de votre appareil avant l’activation.</p>
+    </section>
+
     <!-- Section Caractéristiques -->
     <section class="features-showcase">
         <div class="showcase-grid">
@@ -1407,24 +1554,36 @@ button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{tr
     <!-- Option d’activation de l’application Hot Player -->
     <section class="tutorial-section" id="activation-app-section">
         <div class="section-header" style="text-align:center;display:block;">
-            <h2 class="section-title">Activation de l’application Hot Player</h2>
-            <p class="section-subtitle">Une option facultative, en complément de votre abonnement IPTV</p>
+            <h2 class="section-title">Activation Hot Player ou IBO Player</h2>
+            <p class="section-subtitle">Choisissez votre application et votre licence, en complément de votre abonnement IPTV</p>
         </div>
         <div class="tutorial-grid">
             <div class="tutorial-card hotplayer-card" style="text-align:center;">
-                <div class="hotplayer-logo" aria-label="Logo officiel Hot Player"><img src="https://www.hotplayer.app/hpv.png" alt="Logo officiel Hot Player" loading="lazy" decoding="async"><span>Activation <b>HOT PLAYER</b></span></div>
-                <p>Choisissez la durée de licence qui vous convient. Le paiement de la licence s’effectue en une seule fois pour la durée choisie.</p>
-                <div class="hotplayer-prices" role="radiogroup" aria-label="Choisissez votre licence Hot Player">
+                <p>Choisissez l’application à activer. Les tarifs sont identiques pour les deux applications.</p>
+                <div class="activation-app-options" role="radiogroup" aria-label="Choisissez l’application à activer">
+                    <label class="activation-app-choice selected" id="activationHotPlayerChoice">
+                        <input type="radio" name="activationApp" value="hotplayer" checked onchange="updateActivationAppChoice()" aria-label="Choisir Hot Player">
+                        <img src="https://www.hotplayer.app/hpv.png" alt="Logo Hot Player" loading="eager" decoding="async">
+                        <span><strong>Hot Player</strong><small>Activation de licence</small></span>
+                    </label>
+                    <label class="activation-app-choice" id="activationIboPlayerChoice">
+                        <input type="radio" name="activationApp" value="iboplayer" onchange="updateActivationAppChoice()" aria-label="Choisir IBO Player">
+                        <img src="https://store.iboiptv.com/storage/products/ibo-player.png" alt="Logo IBO Player" loading="eager" decoding="async">
+                        <span><strong>IBO Player</strong><small>Activation de licence</small></span>
+                    </label>
+                </div>
+                <p>Choisissez ensuite la durée de licence. Le paiement s’effectue en une seule fois.</p>
+                <div class="hotplayer-prices" role="radiogroup" aria-label="Choisissez la durée de licence">
                     <label class="hotplayer-price hotplayer-choice" id="hotPlayerYearChoice">
-                        <input type="radio" name="hotPlayerLicense" value="year" aria-label="Licence Hot Player 1 an, 10 euros" onchange="updateHotPlayerChoice()">
+                        <input type="radio" name="hotPlayerLicense" value="year" aria-label="Licence 1 an, 10 euros" onchange="updateHotPlayerChoice()">
                         <strong>10 €</strong><span>Licence 1 an</span><small>Paiement unique</small>
                     </label>
                     <label class="hotplayer-price hotplayer-choice selected" id="hotPlayerLifetimeChoice">
-                        <input type="radio" name="hotPlayerLicense" value="lifetime" aria-label="Activation Hot Player à vie, 20 euros" checked onchange="updateHotPlayerChoice()">
+                        <input type="radio" name="hotPlayerLicense" value="lifetime" aria-label="Activation à vie, 20 euros" checked onchange="updateHotPlayerChoice()">
                         <strong>20 €</strong><span>Activation à vie</span><small>Paiement unique</small>
                     </label>
                 </div>
-                <p class="hotplayer-note">Ces frais concernent uniquement la licence de l’application Hot Player. Votre abonnement IPTV reste séparé : à son échéance, vous renouvelez uniquement le code IPTV correspondant à la formule commandée.</p>
+                <p class="hotplayer-note">Ces frais concernent uniquement la licence de l’application sélectionnée. Votre abonnement IPTV reste séparé : à son échéance, vous renouvelez uniquement le code IPTV correspondant à la formule commandée.</p>
                 <button type="button" class="add-cart-btn hotplayer-main-btn" onclick="openHotPlayerSummary()">Demander l’activation</button>
             </div>
         </div>
@@ -1680,8 +1839,10 @@ button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{tr
                 <div><strong>Service TV · engagement qualité</strong><small>Assistance et accompagnement client 24 h/24, 7 j/7</small></div>
             </div>
         </div>
-        <p>&copy; 2026 IPTV PRO & STREAM. Tous droits réservés. Assistance et informations de configuration disponibles via WhatsApp.</p>
+        <p class="footer-copyright"><span class="footer-brand-mark" aria-label="Logo IPTV PRO"><i class="fa-solid fa-tv" aria-hidden="true"></i><strong>IPTV <span>PRO</span></strong></span><span>&copy; 2026 IPTV PRO &amp; STREAM. Tous droits réservés. Assistance et informations de configuration disponibles via WhatsApp.</span></p>
     </footer>
+
+    <button id="back-to-top" type="button" aria-label="Remonter tout en haut de la page" title="Remonter en haut"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
 
     <script>
         const myWhatsAppNumber = "33759119698"; 
@@ -1837,11 +1998,29 @@ button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{tr
             document.getElementById('contactModal').classList.add('open');
         }
 
+        function getActivationApp() {
+            const selected = document.querySelector('input[name="activationApp"]:checked');
+            return selected && selected.value === 'iboplayer'
+                ? { key: 'iboplayer', name: 'IBO Player' }
+                : { key: 'hotplayer', name: 'Hot Player' };
+        }
+
+        function updateActivationAppChoice() {
+            const selected = document.querySelector('input[name="activationApp"]:checked');
+            document.querySelectorAll('.activation-app-choice').forEach(card => {
+                const input = card.querySelector('input');
+                const isSelected = !!selected && input === selected;
+                card.classList.toggle('selected', isSelected);
+                card.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+            });
+        }
+
         function getHotPlayerSelection() {
             const selected = document.querySelector('input[name="hotPlayerLicense"]:checked');
+            const app = getActivationApp();
             return selected && selected.value === 'year'
-                ? { plan: 'Licence 1 an', price: '10 €', message: 'Licence Hot Player pour 1 an — 10 € (paiement unique)' }
-                : { plan: 'Activation à vie', price: '20 €', message: 'Activation Hot Player à vie — 20 € (paiement unique)' };
+                ? { app: app.name, plan: 'Licence 1 an', price: '10 €', message: `Licence ${app.name} pour 1 an — 10 € (paiement unique)` }
+                : { app: app.name, plan: 'Activation à vie', price: '20 €', message: `Activation ${app.name} à vie — 20 € (paiement unique)` };
         }
 
         function updateHotPlayerChoice() {
@@ -1859,9 +2038,14 @@ button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{tr
             input.addEventListener('change', updateHotPlayerChoice);
         });
         updateHotPlayerChoice();
+        document.querySelectorAll('input[name="activationApp"]').forEach(input => {
+            input.addEventListener('change', updateActivationAppChoice);
+        });
+        updateActivationAppChoice();
 
         function openHotPlayerSummary() {
             const choice = getHotPlayerSelection();
+            document.getElementById('hotPlayerSummaryApp').textContent = choice.app;
             document.getElementById('hotPlayerSummaryPlan').textContent = choice.plan;
             document.getElementById('hotPlayerSummaryPrice').textContent = `${choice.price} — paiement unique`;
             document.getElementById('hotPlayerSummaryModal').classList.add('open');
@@ -1873,7 +2057,7 @@ button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{tr
 
         function confirmHotPlayerOnWhatsApp() {
             const choice = getHotPlayerSelection();
-            const text = `Bonjour, je souhaite demander l’activation de l’application Hot Player.\n\nRécapitulatif :\n• Service : Licence de l’application Hot Player\n• Formule : ${choice.plan}\n• Prix : ${choice.price} (paiement unique)\n\nJe comprends que l’abonnement IPTV est distinct et devra être renouvelé séparément selon ma commande. Merci de m’indiquer les étapes d’activation.`;
+            const text = `Bonjour, je souhaite demander l’activation de l’application ${choice.app}.\n\nRécapitulatif :\n• Application : ${choice.app}\n• Formule : ${choice.plan}\n• Prix : ${choice.price} (paiement unique)\n\nJe comprends que l’abonnement IPTV est distinct et devra être renouvelé séparément selon ma commande. Merci de m’indiquer les étapes d’activation.`;
             const url = `https://wa.me/${myWhatsAppNumber}?text=${encodeURIComponent(text)}`;
             window.open(url, '_blank', 'noopener');
             closeHotPlayerSummary();
@@ -2028,6 +2212,31 @@ button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{tr
         });
         startSlideshow();
 
+        // Prépare les images un peu avant qu'elles arrivent à l'écran, sans charger tout le catalogue d'un coup.
+        (function prepareImagesAhead() {
+            const imgs = Array.from(document.images || []);
+            imgs.forEach((img, index) => {
+                img.decoding = 'async';
+                if (index < 3) {
+                    img.loading = 'eager';
+                    if (index === 0) img.fetchPriority = 'high';
+                } else if (!img.loading) {
+                    img.loading = 'lazy';
+                }
+            });
+            if ('IntersectionObserver' in window) {
+                const imageObserver = new IntersectionObserver(entries => {
+                    entries.forEach(entry => {
+                        if (!entry.isIntersecting) return;
+                        const img = entry.target;
+                        img.loading = 'eager';
+                        if (img.decode) img.decode().catch(() => {});
+                        imageObserver.unobserve(img);
+                    });
+                }, { rootMargin: '650px 0px', threshold: 0.01 });
+                imgs.forEach(img => { if (img.loading === 'lazy') imageObserver.observe(img); });
+            }
+        })();
         window.onload = renderProducts;
     </script>
 
@@ -2045,7 +2254,7 @@ button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{tr
   const items=[...document.querySelectorAll(selectors)].filter((el,i,arr)=>arr.indexOf(el)===i);
   items.forEach((el,i)=>{if(el.closest('#iptvIntro'))return;el.classList.add('motion-reveal');if(el.matches('.product-card,.feature-card,.review-card'))el.style.setProperty('--reveal-delay',((i%4)*65)+'ms')});
   if('IntersectionObserver' in window){
-    const io=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');io.unobserve(entry.target)}}),{threshold:.08,rootMargin:'0px 0px -35px 0px'});
+    const io=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');io.unobserve(entry.target)}}),{threshold:.01,rootMargin:'220px 0px 220px 0px'});
     items.forEach(el=>io.observe(el));
   }else items.forEach(el=>el.classList.add('is-visible'));
   // Ne pas faire tourner le diaporama lorsque l'onglet est caché.
@@ -2059,6 +2268,26 @@ button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{tr
 </script>
 
 
+
+<script id="back-to-top-script">
+(function(){
+  const button = document.getElementById('back-to-top');
+  if (!button) return;
+  let ticking = false;
+  const update = () => {
+    const doc = document.documentElement;
+    const remaining = doc.scrollHeight - (window.scrollY + window.innerHeight);
+    const nearBottom = remaining <= Math.max(180, window.innerHeight * 0.22);
+    button.classList.toggle('is-visible', nearBottom && window.scrollY > 250);
+    ticking = false;
+  };
+  const onScroll = () => { if (!ticking) { ticking = true; window.requestAnimationFrame(update); } };
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll, {passive:true});
+  button.addEventListener('click', () => window.scrollTo({top:0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}));
+  update();
+})();
+</script>
 
 <script id="basic-content-protection">
 /* Dissuasion légère contre la copie : ce n'est pas une protection absolue du code source. */
