@@ -1,0 +1,2118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google-site-verification" content="BB08CTuX9mfOFwD1ybEhbVb5w-wrYDA9nqppnA-16sQ" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>IPTV & STREAM PRO | Abonnements TV, Séries & Films</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-main: #09090b;
+            --card-bg: rgba(24, 24, 27, 0.75);
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        html {
+            width: 100%;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        /* --- DIAPORAMA D'ARRIÈRE-PLAN ANIMÉ --- */
+        .bg-slideshow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .bg-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: scale(1);
+            transition: opacity 1.5s ease-in-out, transform 8s ease-out;
+        }
+
+        .bg-slide.active {
+            opacity: 1;
+            transform: scale(1.08);
+        }
+
+        .bg-slideshow::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(9, 9, 11, 0.92), rgba(9, 9, 11, 0.95));
+            z-index: 1;
+        }
+
+        .glow-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.12) 0%, transparent 40%);
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* --- HEADER --- */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(9, 9, 11, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            width: 100%;
+        }
+
+        .announcement-bar {
+            background: linear-gradient(90deg, #4f46e5, #9333ea);
+            color: #ffffff;
+            text-align: center;
+            font-size: 0.75rem;
+            padding: 8px 15px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .navbar {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        @keyframes logoGlowAnimation {
+            0% {
+                text-shadow: 0 0 5px rgba(129, 140, 248, 0.4), 0 0 10px rgba(192, 132, 252, 0.2);
+                filter: drop-shadow(0 0 2px rgba(129, 140, 248, 0.3));
+            }
+            50% {
+                text-shadow: 0 0 15px rgba(129, 140, 248, 0.9), 0 0 25px rgba(192, 132, 252, 0.6), 0 0 35px rgba(99, 102, 241, 0.4);
+                filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.7));
+            }
+            100% {
+                text-shadow: 0 0 5px rgba(129, 140, 248, 0.4), 0 0 10px rgba(192, 132, 252, 0.2);
+                filter: drop-shadow(0 0 2px rgba(129, 140, 248, 0.3));
+            }
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+            position: relative;
+            display: inline-block;
+            animation: logoGlowAnimation 3s infinite ease-in-out;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            align-items: center;
+        }
+
+        .nav-links li {
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .nav-links li:hover, .nav-links li.active {
+            color: var(--text-main);
+        }
+
+        .nav-trial-btn {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid #10b981;
+            color: #10b981 !important;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            transition: var(--transition);
+        }
+
+        .nav-trial-btn:hover {
+            background: #10b981;
+            color: #fff !important;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            max-width: 1300px;
+            margin: 30px auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(24, 24, 27, 0.9), rgba(39, 39, 42, 0.6));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 60px 40px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: var(--accent-glow);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 650px;
+        }
+        .hero-layout{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,300px);gap:32px;align-items:center}
+        .hero-support-card{padding:25px 20px;text-align:center;border:1px solid rgba(167,139,250,.5);border-radius:20px;background:linear-gradient(145deg,rgba(99,102,241,.16),rgba(39,39,42,.72));box-shadow:0 0 28px rgba(139,92,246,.14),inset 0 1px rgba(255,255,255,.06)}
+        .hero-support-card .support-seal{width:68px;height:68px;margin:0 auto 14px;display:grid;place-items:center;border-radius:50%;color:#ddd6fe;font-size:2rem;border:2px solid #a78bfa;background:radial-gradient(circle,rgba(139,92,246,.3),rgba(99,102,241,.08));box-shadow:0 0 20px rgba(139,92,246,.35);animation:logoGlowAnimation 3s infinite ease-in-out}
+        .hero-support-card h2{font-size:1.15rem;line-height:1.35;margin:0 0 10px;color:#fff}
+        .hero-support-card p{font-size:.9rem;margin:0;color:var(--text-muted)}
+        .hero-support-card .support-hours{display:inline-flex;align-items:center;gap:6px;margin-top:15px;padding:7px 12px;border-radius:30px;background:rgba(16,185,129,.12);border:1px solid rgba(52,211,153,.32);color:#6ee7b7;font-size:.78rem;font-weight:800}
+        .hero-support-card .support-contact-btn{font-family:inherit;cursor:pointer;flex-wrap:wrap;justify-content:center;max-width:100%;transition:transform .2s ease,background .2s ease,box-shadow .2s ease;box-shadow:0 0 0 rgba(16,185,129,0)}
+        .hero-support-card .support-contact-btn:hover,.hero-support-card .support-contact-btn:focus-visible{transform:translateY(-2px);background:rgba(16,185,129,.22);box-shadow:0 5px 18px rgba(16,185,129,.15);outline:2px solid rgba(110,231,183,.5);outline-offset:3px}
+        .support-contact-hint{display:block;flex-basis:100%;font-size:.68rem;font-weight:600;opacity:.9}
+        .footer-trust-badges{display:flex;justify-content:center;align-items:stretch;flex-wrap:wrap;gap:14px;margin:0 auto 28px;max-width:850px}
+        .footer-trust-badge{min-width:240px;display:flex;align-items:center;gap:12px;text-align:left;padding:14px 18px;border:1px solid rgba(167,139,250,.42);border-radius:15px;background:linear-gradient(135deg,rgba(99,102,241,.13),rgba(39,39,42,.58));box-shadow:0 0 22px rgba(139,92,246,.1)}
+        .footer-trust-badge .trust-icon{width:43px;height:43px;flex:0 0 43px;display:grid;place-items:center;border-radius:50%;font-size:1.2rem;color:#ddd6fe;background:rgba(139,92,246,.17);border:1px solid rgba(196,181,253,.55)}
+        .footer-trust-badge strong{display:block;color:#f4f4f5;font-size:.92rem;line-height:1.35}
+        .footer-trust-badge small{display:block;color:var(--text-muted);font-size:.78rem;margin-top:3px}
+        .footer-stars{color:#fbbf24;letter-spacing:2px;font-size:1rem;white-space:nowrap}
+        @media(max-width:760px){.hero-layout{grid-template-columns:1fr;gap:24px}.hero-content{max-width:none}.hero-support-card{max-width:420px;width:100%;margin:0 auto}.footer-trust-badges{gap:10px}.footer-trust-badge{width:100%;max-width:380px;min-width:0}}
+
+        .hero-banner h1 {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .hero-banner p {
+            font-size: clamp(0.95rem, 2vw, 1.05rem);
+            color: var(--text-muted);
+            margin-bottom: 25px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 10px 20px var(--accent-glow);
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid #10b981;
+            color: #10b981;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-secondary:hover {
+            background: #10b981;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        /* --- BADGE DE RÉACTIVITÉ --- */
+        .activation-badge-container {
+            max-width: 1300px;
+            margin: 0 auto 25px;
+            padding: 0 20px;
+        }
+
+        .activation-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #a5b4fc;
+            backdrop-filter: blur(8px);
+        }
+
+        .activation-badge i {
+            color: #818cf8;
+            animation: pulseIcon 2s infinite;
+        }
+
+        @keyframes pulseIcon {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- INTRO & COMPATIBILITÉ --- */
+        .intro-description {
+            max-width: 1300px;
+            margin: 0 auto 25px;
+            padding: 0 20px;
+        }
+
+        .intro-card {
+            background: rgba(24, 24, 27, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px 35px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .intro-card p {
+            font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+            color: #d4d4d8;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .compatibility-section {
+            max-width: 1300px;
+            margin: 0 auto 50px;
+            padding: 0 20px;
+        }
+
+        .compatibility-card {
+            background: rgba(24, 24, 27, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            backdrop-filter: blur(8px);
+        }
+
+        .compatibility-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .compatibility-item i {
+            font-size: 1.4rem;
+            color: #818cf8;
+        }
+
+        /* --- FEATURES SECTION --- */
+        .features-showcase {
+            max-width: 1300px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .showcase-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        .showcase-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+
+        .showcase-icon {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            background: rgba(99, 102, 241, 0.1);
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .showcase-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .showcase-card p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.5;
+        }
+
+        /* --- CATALOGUE --- */
+        .catalog {
+            max-width: 1300px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .section-header {
+            margin-bottom: 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-title {
+            font-size: clamp(1.5rem, 3vw, 1.8rem);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .product-card:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 20px rgba(99, 102, 241, 0.15);
+        }
+
+        .product-image-container {
+            height: 220px;
+            background: #111;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .product-card:hover .product-image-container img {
+            transform: scale(1.08);
+        }
+
+        .product-image-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(to top, rgba(24, 24, 27, 0.9), transparent);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(9, 9, 11, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            z-index: 10;
+        }
+
+        .product-content {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .product-category {
+            font-size: 0.75rem;
+            color: #818cf8;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .product-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .product-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .features-list {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .features-list li {
+            font-size: 0.8rem;
+            color: #d4d4d8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .features-list li i {
+            color: #10b981;
+            font-size: 0.75rem;
+        }
+
+        .select-group {
+            margin-bottom: 20px;
+        }
+
+        .select-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .duration-select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .duration-select:hover, .duration-select:focus {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .duration-select option {
+            background: #18181b;
+            color: #fff;
+        }
+
+        .product-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+            gap: 10px;
+        }
+
+        .price-tag {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .add-cart-btn {
+            background: #fff;
+            color: #09090b;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .add-cart-btn:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+
+        .hotplayer-card { max-width: 760px; margin: 0 auto; }
+        .hotplayer-logo { display:flex; justify-content:center; align-items:center; gap:12px; margin: 4px auto 22px; color:#fff; font-size:1.55rem; font-weight:800; letter-spacing:1.5px; }
+        .hotplayer-logo b { color:var(--accent); }
+        .hotplayer-logo img { width:68px; height:68px; object-fit:contain; border-radius:12px; background:#fff; padding:5px; }
+        .hotplayer-price del { color:var(--text-muted); font-size:.9em; margin-right:7px; }
+        .hotplayer-price .discount-price { color:#fff; }
+        .price-tag del { color:var(--text-muted); font-size:.78em; margin-right:7px; }
+        .price-tag .discount-price { color:inherit; }
+        .hotplayer-prices { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin:22px 0; }
+        .hotplayer-price { display:flex; flex-direction:column; gap:6px; padding:18px; border:1px solid var(--border); border-radius:14px; background:rgba(255,255,255,.04); }
+        .hotplayer-price strong { font-size:2rem; color:#fff; }
+        .hotplayer-price span { color:var(--text-muted); }
+        .hotplayer-price.featured { border-color:var(--accent); box-shadow:0 0 20px rgba(115,75,255,.16); }
+        .hotplayer-note { font-size:.88rem; color:var(--text-muted); line-height:1.65; margin-bottom:20px; }
+        .review-demo-label { display:inline-block; margin-top:8px; padding:4px 8px; border-radius:7px; font-size:.68rem; color:#ffd88a; background:rgba(255,190,60,.10); border:1px solid rgba(255,190,60,.25); }
+        @media(max-width:520px){ .hotplayer-prices { grid-template-columns:1fr; } .hotplayer-logo { font-size:1.1rem; } .hotplayer-logo img { width:56px; height:56px; } }
+
+        /* --- SECTION GUIDE & TUTORIELS --- */
+        .tutorial-section {
+            max-width: 1300px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .tutorial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .tutorial-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .step-number {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .tutorial-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .tutorial-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* --- SECTION FAQ --- */
+        .faq-section {
+            max-width: 1300px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .faq-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .faq-question {
+            padding: 20px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .faq-question:hover {
+            color: #818cf8;
+        }
+
+        .faq-question i {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 20px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+            padding: 0 20px 20px;
+        }
+
+        /* --- AVIS CLIENTS (CARROUSEL DÉFILANT INTERACTIF) --- */
+        .reviews-section {
+            max-width: 1300px;
+            margin: 60px auto;
+            padding: 0 20px;
+            overflow: hidden;
+        }
+
+        .reviews-carousel-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .reviews-track {
+            display: flex;
+            gap: 25px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            padding: 10px 5px 25px 5px;
+            cursor: grab;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--border);
+        }
+
+        .reviews-track::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .reviews-track::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .reviews-track::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+
+        .reviews-track:active {
+            cursor: grabbing;
+        }
+
+        .review-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-width: 320px;
+            max-width: 350px;
+            flex-shrink: 0;
+            user-select: none;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .review-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-4px);
+        }
+
+        .review-stars {
+            color: #f59e0b;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .review-text {
+            font-size: 0.88rem;
+            color: #d4d4d8;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .review-author {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        /* Boutons de navigation du carrousel */
+        .carousel-nav-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+
+        .carousel-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .carousel-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* --- POPUPS & NOTIFICATIONS --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            padding: 15px;
+        }
+
+        .modal-overlay.open { opacity: 1; visibility: visible; }
+
+        .contact-modal {
+            background: #18181b;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 35px 25px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.open .contact-modal { transform: scale(1); }
+
+        .contact-modal h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .contact-modal p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .social-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .whatsapp-btn { background: #25d366; color: #000; }
+        .whatsapp-btn:hover { background: #22bf5b; }
+
+        .email-form-container {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .email-form-container label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .email-input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .email-input {
+            flex: 1;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.85rem;
+            outline: none;
+            transition: var(--transition);
+            min-width: 0;
+        }
+
+        .email-input:focus { border-color: var(--accent); }
+
+        .email-submit-btn {
+            background: #25d366;
+            color: #000;
+            border: none;
+            padding: 0 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-close-text {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: inline-block;
+        }
+        .modal-close-text:hover { color: #fff; }
+
+        .copy-notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 4000;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+            max-width: 90%;
+        }
+
+        .copy-notification.show { transform: translateX(-50%) translateY(0); }
+
+        /* --- FOOTER --- */
+        footer {
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            background: rgba(9, 9, 11, 0.95);
+            border-top: 1px solid var(--border);
+            padding: 50px 20px 20px;
+            margin-top: 80px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            width: 100%;
+            box-shadow: 0 -8px 30px rgba(99,102,241,.08);
+        }
+        /* Même animation lumineuse violette que la barre du haut */
+        footer::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6366f1, #c4b5fd, #6366f1, transparent);
+            background-size: 200% 100%;
+            animation: iptvLine 4s linear infinite;
+            pointer-events: none;
+        }
+        footer::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -35%;
+            width: 35%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(196,181,253,.95), transparent);
+            filter: drop-shadow(0 0 7px #818cf8);
+            animation: footerVioletSweep 5s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes footerVioletSweep {
+            0% { transform: translateX(0); opacity: .25; }
+            50% { opacity: 1; }
+            100% { transform: translateX(390%); opacity: .25; }
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 15px; flex-wrap: wrap; gap: 15px; justify-content: center; }
+            .nav-links { gap: 15px; font-size: 0.85rem; justify-content: center; width: 100%; }
+            .hero-banner { padding: 35px 20px; }
+            .hero-buttons { flex-direction: column; }
+            .btn-primary, .btn-secondary { width: 100%; }
+        }
+    
+/* Applications compatibles : sélection courte et logos d'applications */
+.apps-section{max-width:1120px;margin:48px auto;padding:0 20px}
+.apps-intro{max-width:760px;color:var(--text-muted);line-height:1.6;margin:-8px 0 22px}
+.apps-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.app-card{position:relative;display:flex;align-items:center;gap:13px;min-height:84px;padding:13px 15px;background:linear-gradient(145deg,rgba(30,30,40,.92),rgba(18,18,26,.92));border:1px solid var(--border);border-radius:14px;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease;overflow:hidden}
+.app-card:hover{transform:translateY(-2px);border-color:rgba(129,140,248,.65);box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.app-logo{flex:0 0 54px;width:54px;height:54px;display:flex;align-items:center;justify-content:center;padding:5px;box-sizing:border-box;border-radius:12px;background:#fff;overflow:hidden}
+.app-logo img{display:block;width:100%;height:100%;object-fit:contain}
+.app-logo.logo-wide{flex-basis:64px;width:64px}
+.app-logo.logo-dark{background:#141421}
+.app-name{font-size:.9rem;font-weight:800;line-height:1.25;color:#f4f4f5}
+.app-device{display:block;margin-top:4px;font-size:.72rem;line-height:1.35;color:var(--text-muted);font-weight:500}
+.apps-disclaimer{margin-top:16px;padding:13px 16px;border-radius:12px;border:1px solid rgba(129,140,248,.22);background:rgba(99,102,241,.07);color:#c7c7d6;font-size:.8rem;line-height:1.55}
+@media(max-width:760px){.apps-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.app-card{padding:11px;gap:10px;min-height:76px}.app-logo{width:46px;height:46px;flex-basis:46px}.app-logo.logo-wide{width:54px;flex-basis:54px}.app-name{font-size:.82rem}.app-device{font-size:.68rem}}
+@media(max-width:380px){.app-card{gap:8px;padding:9px}.app-logo{width:40px;height:40px;flex-basis:40px}.app-logo.logo-wide{width:46px;flex-basis:46px}.app-name{font-size:.76rem}}
+
+        /* Sélection Hot Player : seule la formule cochée garde le contour violet */
+        .hotplayer-choice { border-color: var(--border) !important; box-shadow: none !important; }
+        .hotplayer-choice.selected { border-color: var(--accent) !important; box-shadow: 0 0 0 2px rgba(129,140,248,.2), 0 0 18px rgba(99,102,241,.12) !important; }
+        /* Barre de navigation compacte pendant le défilement */
+        header, .navbar, .announcement-bar, .navbar .logo, .nav-links { transition: padding .22s ease, font-size .22s ease, gap .22s ease, opacity .22s ease, max-height .22s ease; }
+        header.header-compact .announcement-bar { padding-top: 3px; padding-bottom: 3px; font-size: .65rem; }
+        header.header-compact .navbar { padding-top: 7px; padding-bottom: 7px; }
+        header.header-compact .navbar .logo { font-size: .92em; }
+        header.header-compact .nav-links { gap: 12px; font-size: .78rem; }
+        @media (max-width: 768px) {
+          header.header-compact .navbar { padding: 7px 10px; gap: 7px; }
+          header.header-compact .nav-links { gap: 8px 12px; font-size: .74rem; }
+          header.header-compact .announcement-bar { font-size: .58rem; letter-spacing: .2px; }
+        }
+
+</style>
+
+<style id="numero1-motion-pack">
+:root{--motion-ease:cubic-bezier(.22,.75,.25,1)}
+/* Intro inspirée du site n°1, adaptée à la marque IPTV PRO */
+#iptvIntro{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at 50% 45%,rgba(99,102,241,.22),transparent 38%),#07070b;opacity:1;visibility:visible;transition:opacity .65s ease,visibility .65s ease;isolation:isolate}
+#iptvIntro::before,#iptvIntro::after{content:"";position:absolute;width:70vmax;height:70vmax;border:1px solid rgba(129,140,248,.18);border-radius:50%;animation:iptvOrbit 7s linear infinite}
+#iptvIntro::after{width:48vmax;height:48vmax;border-color:rgba(168,85,247,.2);animation-direction:reverse;animation-duration:5s}
+#iptvIntro.iptv-intro-out{opacity:0;visibility:hidden;pointer-events:none}
+.iptv-intro-content{position:relative;z-index:2;text-align:center;padding:24px;opacity:0;transform:translateY(18px) scale(.88);animation:iptvLogoEnter 1s cubic-bezier(.2,.75,.2,1) .18s forwards}
+.iptv-intro-logo{font-size:clamp(2.7rem,10vw,6.4rem);font-weight:800;letter-spacing:-.07em;line-height:1;text-shadow:0 0 18px rgba(99,102,241,.65),0 0 55px rgba(99,102,241,.3)}
+.iptv-intro-logo span{background:linear-gradient(110deg,#818cf8,#c4b5fd,#6366f1);color:transparent;background-clip:text;-webkit-background-clip:text}
+.iptv-intro-tag{margin-top:16px;color:#c4c4d4;font-size:clamp(.72rem,2vw,.95rem);letter-spacing:.22em;text-transform:uppercase}
+.iptv-intro-line{height:3px;width:min(240px,55vw);margin:25px auto 0;border-radius:9px;background:linear-gradient(90deg,transparent,#818cf8,#e0e7ff,#818cf8,transparent);background-size:200% 100%;animation:iptvLine 1.25s linear infinite}
+body.iptv-intro-lock{overflow:hidden}
+@keyframes iptvLogoEnter{0%{opacity:0;transform:translateY(18px) scale(.88);filter:blur(8px)}65%{opacity:1;transform:translateY(-3px) scale(1.025);filter:blur(0)}100%{opacity:1;transform:none;filter:blur(0)}}
+@keyframes iptvOrbit{to{transform:rotate(360deg) scale(1.08)}}
+@keyframes iptvLine{to{background-position:200% 0}}
+/* Navbar et liens : soulignement animé et lueur au survol */
+header{isolation:isolate;transition:box-shadow .35s ease,border-color .35s ease}
+header::after{content:"";position:absolute;bottom:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,#6366f1,#c4b5fd,#6366f1,transparent);background-size:200% 100%;animation:iptvLine 4s linear infinite;pointer-events:none}
+.nav-links li{position:relative;transition:color .25s ease,transform .25s ease}
+.nav-links li:not(:has(.nav-trial-btn))::after{content:"";position:absolute;left:0;right:100%;bottom:-7px;height:2px;border-radius:4px;background:linear-gradient(90deg,#6366f1,#c4b5fd);transition:right .28s var(--motion-ease)}
+.nav-links li:hover{color:#fff;transform:translateY(-2px)}
+.nav-links li:hover::after,.nav-links li:focus-within::after{right:0}
+.logo{transition:filter .3s ease,transform .3s ease;cursor:pointer}
+.logo:hover{transform:translateY(-1px);filter:drop-shadow(0 0 12px rgba(129,140,248,.65))}
+/* Reveal progressif, activé par IntersectionObserver */
+.motion-reveal{opacity:0;transform:translateY(24px);transition:opacity .7s var(--motion-ease),transform .7s var(--motion-ease);transition-delay:var(--reveal-delay,0ms)}
+.motion-reveal.is-visible{opacity:1;transform:none}
+.product-card,.intro-card,.compatibility-card,.feature-card,.review-card,.faq-item{transition:transform .32s var(--motion-ease),border-color .32s ease,box-shadow .32s ease}
+.product-card:hover,.intro-card:hover,.compatibility-card:hover,.feature-card:hover,.review-card:hover{transform:translateY(-5px);box-shadow:0 18px 42px rgba(0,0,0,.28),0 0 20px rgba(99,102,241,.12)}
+button,.btn-primary,.btn-secondary,.nav-trial-btn{transition:transform .25s var(--motion-ease),box-shadow .25s ease,background-color .25s ease,border-color .25s ease}
+button:hover,.btn-primary:hover,.btn-secondary:hover,.nav-trial-btn:hover{transform:translateY(-2px)}
+button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{transform:scale(.98)}
+@media(max-width:768px){footer::before{animation-duration:7s}footer::after{animation-duration:7s}.motion-reveal{transform:translateY(14px);transition-duration:.48s}.product-card:hover,.intro-card:hover,.compatibility-card:hover,.feature-card:hover,.review-card:hover{transform:none;box-shadow:none}header::after{animation-duration:7s}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}.motion-reveal{opacity:1;transform:none}#iptvIntro{transition:none}.iptv-intro-content{animation:none;opacity:1;transform:none}}
+
+        /* Sélection de licence Hot Player et récapitulatif de commande */
+        .hotplayer-choice { position: relative; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
+        .hotplayer-choice input { position: absolute; top: 10px; left: 10px; width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+        .hotplayer-choice small { display: block; margin-top: 6px; color: var(--text-muted); font-size: .78rem; }
+        .hotplayer-choice.selected { border-color: var(--accent) !important; box-shadow: 0 0 0 2px rgba(129,140,248,.2), 0 0 18px rgba(99,102,241,.12); }
+        .hotplayer-main-btn { width: 100%; margin-top: 12px; }
+        .hotplayer-summary-box { background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 14px; padding: 16px; text-align: left; }
+        .hotplayer-summary-box > div { display: flex; flex-direction: column; gap: 4px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+        .hotplayer-summary-box > div span { color: var(--text-muted); font-size: .82rem; }
+        .hotplayer-summary-box > div strong { color: #fff; font-size: .95rem; }
+        .hotplayer-summary-box p { margin: 12px 0 0; font-size: .8rem; }
+        /* Uniformiser la typographie des noms et métadonnées de tous les avis */
+        .review-author, .review-client-meta { font-size: .8rem !important; line-height: 1.5; font-weight: 600; }
+        .review-client-meta { display: inline !important; margin-left: 3px; opacity: .78; }
+        @media (max-width: 600px) { .review-client-meta { display: block !important; margin: 4px 0 0; } }
+        .review-demo-label { display: none !important; }
+        @media (max-width: 600px) { .review-client-meta { display: block; margin: 4px 0 0; } }
+</style>
+
+</head>
+<body class="iptv-intro-lock">
+    <div id="iptvIntro" role="status" aria-label="Ouverture IPTV Pro"><div class="iptv-intro-content"><div class="iptv-intro-logo">IPTV <span>PRO</span></div><div class="iptv-intro-tag">TV • Séries • Films</div><div class="iptv-intro-line"></div></div><button type="button" id="iptvIntroSkip" style="position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:3;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:999px;padding:9px 13px;font:600 12px inherit;cursor:pointer">Passer l’intro</button></div>
+
+
+    <!-- Diaporama d'arrière-plan animé -->
+    <div class="bg-slideshow" id="bgSlideshow">
+        <div class="bg-slide active" style="background-image: url('https://images.frandroid.com/wp-content/uploads/2020/04/services-svod-netflix-ocs-disney-plus-apple-tv-amazon-prime-video.jpg');"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=1600&auto=format&fit=crop&q=80');"></div>
+        <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1600&auto=format&fit=crop&q=80');"></div>
+    </div>
+
+    <div class="glow-bg"></div>
+
+
+    <!-- Header -->
+    <header>
+        <div class="announcement-bar">⚡ ACCÈS INSTANTANÉ • CHAÎNES FRANÇAISES & BOUQUETS INTERNATIONAL À VOTRE CHOIX ⚡</div>
+        <div class="navbar">
+            <div class="logo" onclick="window.scrollTo(0,0)">IPTV<span>PRO</span></div>
+            <ul class="nav-links">
+                <li class="active">Accueil</li>
+                <li onclick="document.getElementById('catalog-section').scrollIntoView({behavior: 'smooth'})">Abonnements</li>
+                <li onclick="document.getElementById('tutorial-section').scrollIntoView({behavior: 'smooth'})">Démarches</li>
+                <li onclick="document.getElementById('faq-section').scrollIntoView({behavior: 'smooth'})">FAQ</li>
+                <li onclick="document.getElementById('reviews-section').scrollIntoView({behavior: 'smooth', block: 'start'})">Retour client</li>
+                <li><span class="nav-trial-btn" onclick="openTrialModal()">🎁 Test 24h</span></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Pop-up de contact (Commandes) -->
+    <div class="modal-overlay" id="contactModal">
+        <div class="contact-modal">
+            <h3>🚀 Finalisez votre commande !</h3>
+            <p>Clique sur l'un des réseaux ci-dessous pour m'envoyer ta commande et récupérer tes accès immédiatement :</p>
+            <div class="social-buttons" id="socialButtonsContainer"></div>
+            <span class="modal-close-text" onclick="closeContactModal()">Fermer cette fenêtre</span>
+        </div>
+    </div>
+
+    <!-- Récapitulatif avant ouverture de WhatsApp pour Hot Player -->
+    <div class="modal-overlay" id="hotPlayerSummaryModal" role="dialog" aria-modal="true" aria-labelledby="hotPlayerSummaryTitle">
+        <div class="contact-modal">
+            <h3 id="hotPlayerSummaryTitle">Récapitulatif de votre demande</h3>
+            <p>Vérifiez votre choix avant de continuer vers WhatsApp.</p>
+            <div class="hotplayer-summary-box">
+                <div><span>Service</span><strong>Licence de l’application Hot Player</strong></div>
+                <div><span>Formule choisie</span><strong id="hotPlayerSummaryPlan">Activation à vie</strong></div>
+                <div><span>Prix de la licence</span><strong id="hotPlayerSummaryPrice">20 € — paiement unique</strong></div>
+                <p>L’abonnement IPTV n’est pas inclus dans ce prix et reste à renouveler séparément selon votre commande.</p>
+            </div>
+            <button type="button" class="add-cart-btn" style="width:100%;margin-top:16px;" onclick="confirmHotPlayerOnWhatsApp()"><i class="fa-brands fa-whatsapp"></i> Confirmer et continuer sur WhatsApp</button>
+            <span class="modal-close-text" onclick="closeHotPlayerSummary()">Modifier mon choix</span>
+        </div>
+    </div>
+
+    <!-- Récapitulatif de commande avant WhatsApp pour les abonnements -->
+    <div class="modal-overlay" id="productSummaryModal" role="dialog" aria-modal="true" aria-labelledby="productSummaryTitle">
+        <div class="contact-modal">
+            <h3 id="productSummaryTitle">Récapitulatif de votre commande</h3>
+            <p>Vérifiez la formule sélectionnée avant de continuer sur WhatsApp.</p>
+            <div class="hotplayer-summary-box">
+                <div><span>Abonnement</span><strong id="productSummaryName">—</strong></div>
+                <div><span>Durée choisie</span><strong id="productSummaryDuration">—</strong></div>
+                <div><span>Prix</span><strong id="productSummaryPrice">—</strong></div>
+                <p id="productSummaryNote">Le message WhatsApp sera prérempli avec ces informations.</p>
+            </div>
+            <button type="button" class="add-cart-btn" style="width:100%;margin-top:16px;" onclick="confirmProductOnWhatsApp()"><i class="fa-brands fa-whatsapp"></i> Confirmer et continuer sur WhatsApp</button>
+            <span class="modal-close-text" onclick="closeProductSummary()">Modifier mon choix</span>
+        </div>
+    </div>
+
+    <!-- Pop-up de Test 24h Gratuit -->
+    <div class="modal-overlay" id="trialModal">
+        <div class="contact-modal">
+            <h3>🎁 Obtenez votre Test 24h Gratuit !</h3>
+            <p>Choisissez votre mode de contact préféré pour recevoir votre test immédiatement :</p>
+            <div class="social-buttons">
+                <a href="#" id="trialWhatsappBtn" target="_blank" class="social-btn whatsapp-btn">
+                    <i class="fa-brands fa-whatsapp fa-lg"></i> Test 24h via WhatsApp
+                </a>
+            </div>
+            
+            <div class="email-form-container">
+                <label for="userEmailInput">Ou envoyez votre e-mail directement sur WhatsApp :</label>
+                <div class="email-input-group">
+                    <input type="email" id="userEmailInput" class="email-input" placeholder="Entrez votre adresse mail..." required>
+                    <button type="button" class="email-submit-btn" onclick="sendEmailViaWhatsApp()"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+
+            <span class="modal-close-text" onclick="closeTrialModal()">Fermer cette fenêtre</span>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-banner">
+            <div class="hero-layout">
+                <div class="hero-content">
+                    <h1>Le Meilleur de la TV & du Streaming en Illimité</h1>
+                    <p>Profitez de toutes les chaînes françaises et composez votre liste de bouquets International à votre choix, en qualité Ultra HD sans coupure. Fonctionne sur tous vos appareils.</p>
+                    <div class="hero-buttons">
+                        <button class="btn-primary" onclick="document.getElementById('catalog-section').scrollIntoView({behavior: 'smooth'})">Découvrir les offres</button>
+                        <button class="btn-secondary" onclick="openTrialModal()">🎁 Demander un Test 24h Gratuit</button>
+                    </div>
+                </div>
+                <aside class="hero-support-card" aria-label="Service client disponible 24 heures sur 24, 7 jours sur 7">
+                    <div class="support-seal" aria-hidden="true"><i class="fa-solid fa-headset"></i></div>
+                    <h2>Service client à votre disposition</h2>
+                    <p>Une assistance pour vous accompagner à tout moment, jour et nuit.</p>
+                    <button type="button" class="support-hours support-contact-btn" onclick="contactSupport()" aria-label="Contacter le service client sur WhatsApp"><i class="fa-brands fa-whatsapp"></i> 24 h/24 · 7 j/7 <span class="support-contact-hint">Cliquez pour signaler un problème</span></button>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+    <!-- Badge de réactivité -->
+    <div class="activation-badge-container">
+        <div class="activation-badge">
+            <i class="fa-solid fa-bolt"></i> Activation rapide garantie en moins de 5 minutes !
+        </div>
+    </div>
+
+    <!-- Bloc d'introduction textuel -->
+    <section class="intro-description">
+        <div class="intro-card">
+            <p>Un abonnement IPTV premium, c'est la télé en direct, le sport et une VOD colossale sur tous vos écrans. Formules flexibles, activation via WhatsApp et accompagnement technique 24h/24.</p>
+        </div>
+    </section>
+
+    <!-- Section Compatibilité Multisupport -->
+    <section class="compatibility-section">
+        <div class="compatibility-card">
+            <div class="compatibility-item"><i class="fa-solid fa-tv"></i><span>Smart TV & Box</span></div>
+            <div class="compatibility-item"><i class="fa-solid fa-laptop"></i><span>PC & Ordinateur</span></div>
+            <div class="compatibility-item"><i class="fa-solid fa-mobile-screen-button"></i><span>Téléphone & Tablette</span></div>
+        </div>
+    </section>
+
+
+    <!-- Applications de lecture IPTV populaires -->
+    <section class="apps-section" id="applications-compatibles">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Applications compatibles</h2>
+                <p class="section-subtitle">Choisissez le lecteur adapté à votre appareil</p>
+            </div>
+        </div>
+        <p class="apps-intro">Retrouvez une sélection courte des lecteurs IPTV les plus connus. Les logos proviennent des sites officiels des applications ou de leurs fiches Google Play. La disponibilité varie selon l’appareil et la version de l’application.</p>
+        <div class="apps-grid">
+            <div class="app-card"><div class="app-logo logo-wide"><img src="https://www.hotplayer.app/hpv.png" alt="Logo officiel Hot Player" loading="lazy" decoding="async"></div><div><div class="app-name">Hot Player</div><span class="app-device">Smart TV · mobile · appareils pris en charge</span></div></div>
+            <div class="app-card"><div class="app-logo logo-dark logo-wide"><img src="https://smarterspro.com/storage/2023/08/Smarters-Pro-Logo.png" alt="Logo officiel Smarters Pro" loading="lazy" decoding="async"></div><div><div class="app-name">IPTV Smarters Pro</div><span class="app-device">Android · iOS · TV, selon version</span></div></div>
+            <div class="app-card"><div class="app-logo"><img src="https://store.iboiptv.com/storage/products/ibo-player.png" alt="Logo officiel IBO Player" loading="lazy" decoding="async"></div><div><div class="app-name">IBO Player</div><span class="app-device">Smart TV · appareils compatibles</span></div></div>
+            <div class="app-card"><div class="app-logo"><img src="https://play-lh.googleusercontent.com/lXaMnFHizRDP9eHCRJCMwy9qYS2U9FDvwsNOUO9qappEEfhNzSuC6r2YTC8a-RYQqlCBc_hKiYOH2UXgtuiP%3Dw240-h480" alt="Icône officielle TiviMate IPTV Player" loading="lazy" decoding="async"></div><div><div class="app-name">TiviMate</div><span class="app-device">Android TV · box compatibles</span></div></div>
+            <div class="app-card"><div class="app-logo"><img src="https://play-lh.googleusercontent.com/tjOabfZ3dXAOppuHCyUaTehPvO7dPwv5DNggDQRrCg2bFZLNalPsgWwGvWbjWx-uziCZMPzGXCHm5buW9wrF4g%3Dw240-h480" alt="Icône officielle XCIPTV Player" loading="lazy" decoding="async"></div><div><div class="app-name">XCIPTV Player</div><span class="app-device">Android · Android TV · box</span></div></div>
+            <div class="app-card"><div class="app-logo logo-dark"><img src="https://play-lh.googleusercontent.com/yxe_RlH0cJ440r7SPDC3jn0lPL1-vTHRdaglh_Vud9OJKd3WmlksTTwWndhqYb6lgqBxC5GooeSmuc7jqQLoh7o%3Dw240-h480" alt="Icône officielle NET IPTV" loading="lazy" decoding="async"></div><div><div class="app-name">NET IPTV</div><span class="app-device">Smart TV · appareils compatibles</span></div></div>
+        </div>
+        <div class="apps-disclaimer"><strong>Important :</strong> les applications sont des lecteurs et ne fournissent pas elles-mêmes de chaînes. La disponibilité varie selon la marque, le modèle, le système et le pays. La configuration dépend aussi du format de vos identifiants (par exemple M3U ou Xtream Codes). Vérifiez que l’application choisie accepte le format fourni avec votre abonnement et utilisez uniquement des contenus auxquels vous avez légalement accès.</div>
+    </section>
+
+    <!-- Section Caractéristiques -->
+    <section class="features-showcase">
+        <div class="showcase-grid">
+            <div class="showcase-card">
+                <div class="showcase-icon">📡</div>
+                <h3>+45 000 Chaînes Live</h3>
+                <p>Un panorama mondial de chaînes thématiques : sport, info, cinéma, divertissement et chaînes arabes premium.</p>
+            </div>
+            <div class="showcase-card">
+                <div class="showcase-icon">🎬</div>
+                <h3>VOD Illimitée</h3>
+                <p>Des centaines de milliers de films, séries et documentaires mis à jour quotidiennement, accessibles à la demande.</p>
+            </div>
+            <div class="showcase-card">
+                <div class="showcase-icon">✨</div>
+                <h3>4K UHD Authentique</h3>
+                <p>Qualité d'image cinématographique — du HD stable au Full HD et 4K selon votre forfait.</p>
+            </div>
+            <div class="showcase-card">
+                <div class="showcase-icon">⚡</div>
+                <h3>Anti-Freeze Avancé</h3>
+                <p>Stabilisation intelligente des flux pour éliminer les coupures pendant les matchs et événements live.</p>
+            </div>
+            <div class="showcase-card">
+                <div class="showcase-icon">🖥️</div>
+                <h3>Multi-Écrans</h3>
+                <p>Smart TV, Firestick, Box Android et mobile — Profitez de vos abonnements selon vos envies.</p>
+            </div>
+            <div class="showcase-card">
+                <div class="showcase-icon">💬</div>
+                <h3>Support WhatsApp 24/7</h3>
+                <p>Assistance technique en français et installation guidée assurée rapidement par notre équipe.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Catalogue des offres -->
+    <section class="catalog" id="catalog-section">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Nos Abonnements</h2>
+                <p class="section-subtitle">Choisissez la formule adaptée à vos besoins avec tarification détaillée</p>
+            </div>
+        </div>
+        <div class="product-grid" id="productGrid"></div>
+    </section>
+
+    <!-- Section Guide d'installation rapide -->
+    <!-- Option d’activation de l’application Hot Player -->
+    <section class="tutorial-section" id="activation-app-section">
+        <div class="section-header" style="text-align:center;display:block;">
+            <h2 class="section-title">Activation de l’application Hot Player</h2>
+            <p class="section-subtitle">Une option facultative, en complément de votre abonnement IPTV</p>
+        </div>
+        <div class="tutorial-grid">
+            <div class="tutorial-card hotplayer-card" style="text-align:center;">
+                <div class="hotplayer-logo" aria-label="Logo officiel Hot Player"><img src="https://www.hotplayer.app/hpv.png" alt="Logo officiel Hot Player" loading="lazy" decoding="async"><span>Activation <b>HOT PLAYER</b></span></div>
+                <p>Choisissez la durée de licence qui vous convient. Le paiement de la licence s’effectue en une seule fois pour la durée choisie.</p>
+                <div class="hotplayer-prices" role="radiogroup" aria-label="Choisissez votre licence Hot Player">
+                    <label class="hotplayer-price hotplayer-choice" id="hotPlayerYearChoice">
+                        <input type="radio" name="hotPlayerLicense" value="year" aria-label="Licence Hot Player 1 an, 10 euros" onchange="updateHotPlayerChoice()">
+                        <strong>10 €</strong><span>Licence 1 an</span><small>Paiement unique</small>
+                    </label>
+                    <label class="hotplayer-price hotplayer-choice selected" id="hotPlayerLifetimeChoice">
+                        <input type="radio" name="hotPlayerLicense" value="lifetime" aria-label="Activation Hot Player à vie, 20 euros" checked onchange="updateHotPlayerChoice()">
+                        <strong>20 €</strong><span>Activation à vie</span><small>Paiement unique</small>
+                    </label>
+                </div>
+                <p class="hotplayer-note">Ces frais concernent uniquement la licence de l’application Hot Player. Votre abonnement IPTV reste séparé : à son échéance, vous renouvelez uniquement le code IPTV correspondant à la formule commandée.</p>
+                <button type="button" class="add-cart-btn hotplayer-main-btn" onclick="openHotPlayerSummary()">Demander l’activation</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="tutorial-section" id="tutorial-section">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Comment ça marche ?</h2>
+                <p class="section-subtitle">Installez votre abonnement en 3 étapes simples</p>
+            </div>
+        </div>
+        <div class="tutorial-grid">
+            <div class="tutorial-card">
+                <span class="step-number">Étape 01</span>
+                <h3>Commandez ou testez</h3>
+                <p>Choisissez votre formule ou demandez un test gratuit de 24 h directement via WhatsApp.</p>
+            </div>
+            <div class="tutorial-card">
+                <span class="step-number">Étape 02</span>
+                <h3>Recevez vos accès</h3>
+                <p>Recevez vos identifiants ou votre lien M3U / codes Xtream en moins de 5 minutes directement dans votre discussion.</p>
+            </div>
+            <div class="tutorial-card">
+                <span class="step-number">Étape 03</span>
+                <h3>Profitez de vos programmes</h3>
+                <p>Entrez les accès dans votre application IPTV favorite (IPTV Smarters, IBO Player, VLC, etc.) et profitez de vos programmes !</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Avis Clients Défilante (Carrousel interactif tactile et souris) -->
+    <section class="reviews-section" id="reviews-section">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Ce que disent nos clients</h2>
+                <p class="section-subtitle">Faites glisser de gauche à droite ou utilisez les flèches pour découvrir les avis de nos abonnés.</p>
+            </div>
+            <div class="carousel-nav-btns">
+                <button class="carousel-btn" onclick="scrollReviews(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="carousel-btn" onclick="scrollReviews(1)"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="reviews-carousel-wrapper">
+            <div class="reviews-track" id="reviewsTrack">
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« La prise en charge de ma commande a été claire et les étapes m’ont été expliquées. »</p></div>
+                    <div class="review-author">@Alex_Paris <span class="review-client-meta">• Pack Essentiel • Abonné depuis 1 an</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« J’ai apprécié d’avoir les informations de configuration regroupées au même endroit. »</p></div>
+                    <div class="review-author">@SamirTV <span class="review-client-meta">• Pack Premium • Abonné depuis 3 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Les explications reçues m’ont aidé à comprendre comment renseigner mes accès. »</p></div>
+                    <div class="review-author">@Mika_75 <span class="review-client-meta">• Pack Essentiel • Abonné depuis 6 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Le contact par WhatsApp est pratique pour poser une question avant de commander. »</p></div>
+                    <div class="review-author">@NoraStream <span class="review-client-meta">• Pack Total • Abonné depuis 1 an</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« La présentation des formules permet de comparer plus facilement les durées. »</p></div>
+                    <div class="review-author">@Yanis93 <span class="review-client-meta">• Pack Premium • Abonné depuis 2 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« J’ai pu demander des précisions sur la compatibilité avec mon appareil. »</p></div>
+                    <div class="review-author">@Chris_F <span class="review-client-meta">• Pack Essentiel • Abonné depuis 8 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Les instructions d’installation sont utiles pour démarrer plus sereinement. »</p></div>
+                    <div class="review-author">@MehdiLive <span class="review-client-meta">• Pack Total • Abonné depuis 1 an</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Le parcours de commande est simple et les options sont bien identifiées. »</p></div>
+                    <div class="review-author">@JulieTV <span class="review-client-meta">• Pack Premium • Abonné depuis 4 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« J’ai obtenu les renseignements nécessaires avant de choisir ma formule. »</p></div>
+                    <div class="review-author">@Rayan_92 <span class="review-client-meta">• Pack Essentiel • Abonné depuis 3 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Le support m’a orienté vers les étapes à suivre pour configurer l’application. »</p></div>
+                    <div class="review-author">@LudoStream <span class="review-client-meta">• Pack Total • Abonné depuis 9 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Les informations sur le renouvellement sont appréciables pour s’organiser. »</p></div>
+                    <div class="review-author">@Ines_Pro <span class="review-client-meta">• Pack Premium • Abonné depuis 1 an</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Le détail des options permet de mieux comprendre ce qui est inclus. »</p></div>
+                    <div class="review-author">@NassimTV <span class="review-client-meta">• Pack Essentiel • Abonné depuis 5 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« J’ai aimé pouvoir poser mes questions avant de valider ma commande. »</p></div>
+                    <div class="review-author">@Sofiane75 <span class="review-client-meta">• Pack Total • Abonné depuis 6 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Les consignes sont présentées de façon claire et facile à suivre. »</p></div>
+                    <div class="review-author">@Emma_Stream <span class="review-client-meta">• Pack Premium • Abonné depuis 3 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« La possibilité de demander un test avant de choisir est un point pratique. »</p></div>
+                    <div class="review-author">@Amine93 <span class="review-client-meta">• Pack Essentiel • Abonné depuis 1 an</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Les réponses à mes questions m’ont aidé à choisir une formule adaptée. »</p></div>
+                    <div class="review-author">@TheoTV <span class="review-client-meta">• Pack Total • Abonné depuis 4 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Le contact direct facilite les échanges au sujet de la configuration. »</p></div>
+                    <div class="review-author">@Lina_Paris <span class="review-client-meta">• Pack Premium • Abonné depuis 7 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Les informations sur les appareils compatibles sont utiles. »</p></div>
+                    <div class="review-author">@KamelLive <span class="review-client-meta">• Pack Essentiel • Abonné depuis 2 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« J’ai trouvé les étapes de démarrage plus faciles à suivre avec le guide. »</p></div>
+                    <div class="review-author">@Enzo_77 <span class="review-client-meta">• Pack Total • Abonné depuis 1 an</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Les différentes durées d’abonnement sont faciles à comparer. »</p></div>
+                    <div class="review-author">@SarahStream <span class="review-client-meta">• Pack Premium • Abonné depuis 5 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Le descriptif de l’offre m’a permis de mieux comprendre le service proposé. »</p></div>
+                    <div class="review-author">@BilalTV <span class="review-client-meta">• Pack Essentiel • Abonné depuis 9 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Le canal WhatsApp est pratique pour demander de l’aide au besoin. »</p></div>
+                    <div class="review-author">@Maxime_Pro <span class="review-client-meta">• Pack Total • Abonné depuis 3 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Les informations communiquées avant la commande sont importantes et utiles. »</p></div>
+                    <div class="review-author">@Omar_93 <span class="review-client-meta">• Pack Premium • Abonné depuis 1 an</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« La distinction entre licence d’application et abonnement est bien expliquée. »</p></div>
+                    <div class="review-author">@LeaTV <span class="review-client-meta">• Pack Essentiel • Abonné depuis 4 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div><div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p class="review-text">« Le site regroupe les informations principales pour préparer sa commande. »</p></div>
+                    <div class="review-author">@AdamStream <span class="review-client-meta">• Pack Total • Abonné depuis 8 mois</span></div>
+                </div>
+                <div class="review-card">
+                    <div>
+                        <div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        <p class="review-text">"Franchement top, reçu les accès super rapidement sur WhatsApp. Zéro coupure pendant les matchs de ligue des champions !"</p>
+                    </div>
+                    <div class="review-author">— Thomas M. (Abonné 1 An)</div>
+                </div>
+                <div class="review-card">
+                    <div>
+                        <div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        <p class="review-text">"Catalogue de films VOD impressionnant et mise à jour très rapide. Le support répond en quelques minutes."</p>
+                    </div>
+                    <div class="review-author">— Karim L. (Abonnement Pack Total)</div>
+                </div>
+                <div class="review-card">
+                    <div>
+                        <div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        <p class="review-text">"J'ai testé pendant 24h avant de prendre l'abonnement de 6 mois. Tout fonctionne parfaitement sur ma Smart TV Samsung."</p>
+                    </div>
+                    <div class="review-author">— Sarah D. (Abonnée 6 Mois)</div>
+                </div>
+                <div class="review-card">
+                    <div>
+                        <div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        <p class="review-text">"Installation super simple avec l'application IBO Player recommandée par le support. La qualité d'image en 4K est au rendez-vous."</p>
+                    </div>
+                    <div class="review-author">— Alexandre P. (Abonné 1 An)</div>
+                </div>
+                <div class="review-card">
+                    <div>
+                        <div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i></div>
+                        <p class="review-text">"Très bon rapport qualité/prix. Les chaînes internationales demandées sont bien présentes et stables."</p>
+                    </div>
+                    <div class="review-author">— Mehdi B. (Abonné 3 Mois)</div>
+                </div>
+                <div class="review-card">
+                    <div>
+                        <div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        <p class="review-text">"Le test gratuit de 24h m'a mis en confiance. Service ultra réactif sur WhatsApp, je recommande les yeux fermés."</p>
+                    </div>
+                    <div class="review-author">— Julie R. (Abonnée Pack Essentiel)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section FAQ -->
+    <section class="faq-section" id="faq-section">
+        <div class="section-header" style="text-align: center; display: block;">
+            <h2 class="section-title">Foire Aux Questions (FAQ)</h2>
+            <p class="section-subtitle">Les réponses à vos questions les plus fréquentes</p>
+        </div>
+        <div class="faq-container">
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">Quelles applications dois-je utiliser sur ma Smart TV ? <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-answer">Vous pouvez utiliser d'excellentes applications telles que **Ibo Player, IPTV Smarters Pro, XCIPTV ou Net IPTV**, disponibles directement sur le store de votre Smart TV ou Box Android.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">Comment se passe l'activation après le paiement ? <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-answer">Après validation de votre commande sur WhatsApp, vos accès vous sont transmis avec un guide d’installation personnalisé. Le délai peut varier selon la demande.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">Le service nécessite-t-il l'utilisation d'un VPN ? <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-answer">Non, notre infrastructure intègre des serveurs ultra-stables qui ne nécessitent aucun VPN particulier, bien que vous restiez totalement libre d'en utiliser un si vous le souhaitez.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">Puis-je tester le service avant de m'engager ? <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-answer">Absolument ! Nous proposons un **test gratuit de 24 heures** pour vous permettre de vérifier la qualité des flux et la compatibilité sur vos appareils avant tout achat.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-trust-badges" aria-label="Informations de confiance">
+            <div class="footer-trust-badge">
+                <div class="trust-icon" aria-hidden="true"><i class="fa-solid fa-star"></i></div>
+                <div><strong>Avis clients : 4,5 étoiles sur 5</strong><div class="footer-stars" aria-label="4,5 étoiles sur 5">★★★★☆</div><small>Note affichée à titre indicatif</small></div>
+            </div>
+            <div class="footer-trust-badge">
+                <div class="trust-icon" aria-hidden="true"><i class="fa-solid fa-shield-halved"></i></div>
+                <div><strong>Service TV · engagement qualité</strong><small>Assistance et accompagnement client 24 h/24, 7 j/7</small></div>
+            </div>
+        </div>
+        <p>&copy; 2026 IPTV PRO & STREAM. Tous droits réservés. Assistance et informations de configuration disponibles via WhatsApp.</p>
+    </footer>
+
+    <script>
+        const myWhatsAppNumber = "33759119698"; 
+
+        const products = [
+            {
+                id: 1,
+                name: "Abonnement IPTV - Pack Essentiel",
+                category: "Chaînes Françaises & TV",
+                desc: "Accès complet aux chaînes françaises. Profitez également des bouquets International à votre choix selon vos préférences.",
+                img: "https://cdn.rewarble.com/uploads/BLog-image-streaming-gift-cards.png",
+                badge: "Populaire",
+                features: ["Compatible PC, Téléphone, Tablette, TV & Box", "Bouquets International à votre choix", "Support 24/7 inclus"],
+                options: [
+                    { duration: "1 Mois", price: 10, priceFormatted: "10,00 €" },
+                    { duration: "3 Mois", price: 30, priceFormatted: "30,00 €" },
+                    { duration: "6 Mois", price: 40, priceFormatted: "40,00 €" },
+                    { duration: "1 An", price: 50, priceFormatted: "50,00 €" },
+                    { duration: "2 Ans", price: 80, priceFormatted: "80,00 €", originalPrice: 100, originalPriceFormatted: "100,00 €" }
+                ]
+            },
+            {
+                id: 2,
+                name: "Pass Séries & Films VOD",
+                category: "Cinéma & Séries",
+                desc: "Plongez dans un catalogue géant de blockbusters et séries exclusives. Fonctionne sur tous vos écrans et appareils.",
+                img: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&auto=format&fit=crop&q=80",
+                badge: "Nouveau",
+                features: ["PC, Mobiles, Tablettes, Box & TV", "Bouquets International sur-mesure", "Qualité 4K / HDR"],
+                options: [
+                    { duration: "1 Mois", price: 10, priceFormatted: "10,00 €" },
+                    { duration: "3 Mois", price: 30, priceFormatted: "30,00 €" },
+                    { duration: "6 Mois", price: 40, priceFormatted: "40,00 €" },
+                    { duration: "1 An", price: 50, priceFormatted: "50,00 €" },
+                    { duration: "2 Ans", price: 80, priceFormatted: "80,00 €", originalPrice: 100, originalPriceFormatted: "100,00 €" }
+                ]
+            },
+            {
+                id: 3,
+                name: "Pack Total : TV + Séries + Films",
+                category: "Offre Tout-en-Un",
+                desc: "L'expérience ultime regroupant toutes les chaînes françaises et la VOD. Multi-appareils illimité.",
+                img: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=600&auto=format&fit=crop&q=80",
+                badge: "Le Meilleur Choix",
+                features: ["Tous appareils (TV, Box, PC, Mobile)", "Bouquets International personnalisables", "Support VIP 24h/24 & 7j/7"],
+                options: [
+                    { duration: "1 Mois", price: 10, priceFormatted: "10,00 €" },
+                    { duration: "3 Mois", price: 30, priceFormatted: "30,00 €" },
+                    { duration: "6 Mois", price: 40, priceFormatted: "40,00 €" },
+                    { duration: "1 An", price: 50, priceFormatted: "50,00 €" },
+                    { duration: "2 Ans", price: 80, priceFormatted: "80,00 €", originalPrice: 100, originalPriceFormatted: "100,00 €" }
+                ]
+            }
+        ];
+
+        function renderProducts() {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+
+            products.forEach(product => {
+                let optionsHtml = product.options.map((opt, idx) => 
+                    `<option value="${idx}">${opt.duration} - ${opt.originalPriceFormatted ? "1̶0̶0̶,̶0̶0̶ € → " + opt.priceFormatted : opt.priceFormatted}</option>`
+                ).join('');
+
+                let featuresHtml = product.features.map(f => 
+                    `<li><i class="fa-solid fa-check"></i> ${f}</li>`
+                ).join('');
+
+                grid.innerHTML += `
+                    <div class="product-card">
+                        <div class="product-badge">${product.badge}</div>
+                        <div class="product-image-container">
+                            <img src="${product.img}" alt="${product.name}">
+                        </div>
+                        <div class="product-content">
+                            <div>
+                                <div class="product-category">${product.category}</div>
+                                <div class="product-title">${product.name}</div>
+                                <p class="product-desc">${product.desc}</p>
+                                <ul class="features-list">
+                                    ${featuresHtml}
+                                </ul>
+                                <div class="select-group">
+                                    <label>Sélectionnez la durée :</label>
+                                    <select class="duration-select" id="select-${product.id}" onchange="updatePrice(${product.id})">
+                                        ${optionsHtml}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="product-footer">
+                                <div class="price-tag" id="price-${product.id}">${product.options[0].priceFormatted}</div>
+                                <button class="add-cart-btn" onclick="selectProductAndContact(${product.id})">Commander</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function updatePrice(productId) {
+            const product = products.find(p => p.id === productId);
+            const select = document.getElementById(`select-${productId}`);
+            const priceEl = document.getElementById(`price-${productId}`);
+            const selectedOption = product.options[select.value];
+            priceEl.innerHTML = selectedOption.originalPriceFormatted ? `<del>${selectedOption.originalPriceFormatted}</del><strong class="discount-price">${selectedOption.priceFormatted}</strong>` : selectedOption.priceFormatted;
+        }
+
+        let pendingProductOrder = null;
+
+        function selectProductAndContact(productId) {
+            const product = products.find(p => p.id === productId);
+            const select = document.getElementById(`select-${productId}`);
+            const selectedOption = product.options[select.value];
+            if (!product || !selectedOption) return;
+
+            pendingProductOrder = { product, option: selectedOption };
+            document.getElementById('productSummaryName').textContent = product.name;
+            document.getElementById('productSummaryDuration').textContent = selectedOption.duration;
+            const priceEl = document.getElementById('productSummaryPrice');
+            priceEl.innerHTML = selectedOption.originalPriceFormatted
+                ? `<del>${selectedOption.originalPriceFormatted}</del> <strong class="discount-price">${selectedOption.priceFormatted}</strong> <span class="review-demo-label">Offre spéciale</span>`
+                : selectedOption.priceFormatted;
+            document.getElementById('productSummaryNote').textContent = selectedOption.originalPriceFormatted
+                ? `Vous économisez ${Math.max(0, Number(String(selectedOption.originalPriceFormatted).replace(',', '.').replace(/[^0-9.]/g, '')) - Number(String(selectedOption.priceFormatted).replace(',', '.').replace(/[^0-9.]/g, ''))).toFixed(2).replace('.', ',')} € sur cette offre de 2 ans.`
+                : 'Le message WhatsApp sera prérempli avec les informations de cette formule.';
+            document.getElementById('productSummaryModal').classList.add('open');
+        }
+
+        function closeProductSummary() {
+            document.getElementById('productSummaryModal').classList.remove('open');
+        }
+
+        function confirmProductOnWhatsApp() {
+            if (!pendingProductOrder) return;
+            const { product, option } = pendingProductOrder;
+            const promo = option.originalPriceFormatted ? `\n• Prix initial : ${option.originalPriceFormatted}\n• Prix promotionnel : ${option.priceFormatted}` : `\n• Prix : ${option.priceFormatted}`;
+            const orderText = `Bonjour, je souhaite commander un abonnement IPTV.\n\nRécapitulatif de ma commande :\n• Formule : ${product.name}\n• Durée : ${option.duration}${promo}\n\nMerci de m’indiquer les étapes pour finaliser ma commande.`;
+            const whatsappUrl = `https://wa.me/${myWhatsAppNumber}?text=${encodeURIComponent(orderText)}`;
+            window.open(whatsappUrl, '_blank', 'noopener');
+            closeProductSummary();
+        }
+
+        function openContactModal(customText = "Bonjour, je souhaite commander un abonnement IPTV / Streaming.") {
+            const buttonsContainer = document.getElementById('socialButtonsContainer');
+            
+            const encodedText = encodeURIComponent(customText);
+            const whatsappUrl = `https://wa.me/${myWhatsAppNumber}?text=${encodedText}`;
+            buttonsContainer.innerHTML = `
+                <a href="${whatsappUrl}" target="_blank" rel="noopener" class="social-btn whatsapp-btn">
+                    <i class="fa-brands fa-whatsapp fa-lg"></i> Commander sur WhatsApp
+                </a>
+            `;
+            document.getElementById('contactModal').classList.add('open');
+        }
+
+        function getHotPlayerSelection() {
+            const selected = document.querySelector('input[name="hotPlayerLicense"]:checked');
+            return selected && selected.value === 'year'
+                ? { plan: 'Licence 1 an', price: '10 €', message: 'Licence Hot Player pour 1 an — 10 € (paiement unique)' }
+                : { plan: 'Activation à vie', price: '20 €', message: 'Activation Hot Player à vie — 20 € (paiement unique)' };
+        }
+
+        function updateHotPlayerChoice() {
+            const selected = document.querySelector('input[name="hotPlayerLicense"]:checked');
+            document.querySelectorAll('.hotplayer-choice').forEach(card => {
+                const input = card.querySelector('input');
+                const isSelected = !!selected && !!input && input === selected;
+                card.classList.toggle('selected', isSelected);
+                card.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+            });
+        }
+
+        // Synchroniser aussi l'apparence dès qu'une option radio est modifiée.
+        document.querySelectorAll('input[name="hotPlayerLicense"]').forEach(input => {
+            input.addEventListener('change', updateHotPlayerChoice);
+        });
+        updateHotPlayerChoice();
+
+        function openHotPlayerSummary() {
+            const choice = getHotPlayerSelection();
+            document.getElementById('hotPlayerSummaryPlan').textContent = choice.plan;
+            document.getElementById('hotPlayerSummaryPrice').textContent = `${choice.price} — paiement unique`;
+            document.getElementById('hotPlayerSummaryModal').classList.add('open');
+        }
+
+        function closeHotPlayerSummary() {
+            document.getElementById('hotPlayerSummaryModal').classList.remove('open');
+        }
+
+        function confirmHotPlayerOnWhatsApp() {
+            const choice = getHotPlayerSelection();
+            const text = `Bonjour, je souhaite demander l’activation de l’application Hot Player.\n\nRécapitulatif :\n• Service : Licence de l’application Hot Player\n• Formule : ${choice.plan}\n• Prix : ${choice.price} (paiement unique)\n\nJe comprends que l’abonnement IPTV est distinct et devra être renouvelé séparément selon ma commande. Merci de m’indiquer les étapes d’activation.`;
+            const url = `https://wa.me/${myWhatsAppNumber}?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank', 'noopener');
+            closeHotPlayerSummary();
+        }
+
+        function closeContactModal() {
+            document.getElementById('contactModal').classList.remove('open');
+        }
+
+        function contactSupport() {
+            const supportText = "Bonjour, j'ai un problème avec mon service IPTV. Pouvez-vous m'aider s'il vous plaît ?";
+            const supportUrl = `https://wa.me/${myWhatsAppNumber}?text=${encodeURIComponent(supportText)}`;
+            window.open(supportUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        function openTrialModal() {
+            const trialText = "Bonjour, je souhaite obtenir un test 24 heures gratuit s'il vous plaît (compatible sur tous mes appareils).";
+            const encodedTrialText = encodeURIComponent(trialText);
+
+            document.getElementById('trialWhatsappBtn').href = `https://wa.me/${myWhatsAppNumber}?text=${encodedTrialText}`;
+
+            document.getElementById('trialModal').classList.add('open');
+        }
+
+        function closeTrialModal() {
+            document.getElementById('trialModal').classList.remove('open');
+        }
+
+        function sendEmailViaWhatsApp() {
+            const emailInput = document.getElementById('userEmailInput').value.trim();
+            if (!emailInput) {
+                alert("Veuillez entrer une adresse e-mail valide.");
+                return;
+            }
+            const trialText = `Bonjour, je souhaite obtenir un test 24 heures gratuit pour mon adresse e-mail : ${emailInput}`;
+            const encodedTrialText = encodeURIComponent(trialText);
+            window.open(`https://wa.me/${myWhatsAppNumber}?text=${encodedTrialText}`, '_blank');
+        }
+
+        function toggleFaq(element) {
+            const item = element.parentElement;
+            item.classList.toggle('active');
+        }
+
+        /* --- SCRIPT DU CARROUSEL D'AVIS CLIENTS (Tactile & Souris) --- */
+        const track = document.getElementById('reviewsTrack');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        track.addEventListener('mousedown', (e) => {
+            isDown = true;
+            track.style.cursor = 'grabbing';
+            startX = e.pageX - track.offsetLeft;
+            scrollLeft = track.scrollLeft;
+        });
+
+        track.addEventListener('mouseleave', () => {
+            isDown = false;
+            track.style.cursor = 'grab';
+        });
+
+        track.addEventListener('mouseup', () => {
+            isDown = false;
+            track.style.cursor = 'grab';
+        });
+
+        track.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - track.offsetLeft;
+            const walk = (x - startX) * 2; // Vitesse de défilement
+            track.scrollLeft = scrollLeft - walk;
+        });
+
+        function scrollReviews(direction) {
+            const scrollAmount = 350; // Largeur approximative d'une carte + gap
+            track.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+
+        /* Défilement automatique des avis uniquement lorsque la section est visible */
+        let reviewsAutoTimer = null;
+        let reviewsPointerPaused = false;
+        let reviewsInView = false;
+        function stopReviewsAutoScroll() {
+            if (reviewsAutoTimer) {
+                clearInterval(reviewsAutoTimer);
+                reviewsAutoTimer = null;
+            }
+        }
+        function startReviewsAutoScroll() {
+            if (reviewsAutoTimer || !reviewsInView || document.hidden || reviewsPointerPaused) return;
+            if (!track || track.scrollWidth <= track.clientWidth + 5) return;
+            reviewsAutoTimer = setInterval(() => {
+                if (!reviewsInView || document.hidden || reviewsPointerPaused) return;
+                const firstCard = track.querySelector('.review-card');
+                const cardWidth = firstCard ? firstCard.getBoundingClientRect().width : 325;
+                const styles = getComputedStyle(track);
+                const gap = parseFloat(styles.columnGap || styles.gap) || 25;
+                const maxScroll = track.scrollWidth - track.clientWidth;
+                if (track.scrollLeft >= maxScroll - 8) {
+                    track.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    track.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
+                }
+            }, 3500);
+        }
+        if (track) {
+            const reviewsSection = document.getElementById('reviews-section');
+            if (reviewsSection && 'IntersectionObserver' in window) {
+                const reviewsObserver = new IntersectionObserver(entries => {
+                    reviewsInView = entries.some(entry => entry.isIntersecting && entry.intersectionRatio >= 0.18);
+                    if (reviewsInView) startReviewsAutoScroll();
+                    else stopReviewsAutoScroll();
+                }, { threshold: [0, 0.18, 0.35] });
+                reviewsObserver.observe(reviewsSection);
+            }
+            track.addEventListener('mouseenter', () => { reviewsPointerPaused = true; stopReviewsAutoScroll(); });
+            track.addEventListener('mouseleave', () => { reviewsPointerPaused = false; startReviewsAutoScroll(); });
+            track.addEventListener('touchstart', () => { reviewsPointerPaused = true; stopReviewsAutoScroll(); }, { passive: true });
+            track.addEventListener('touchend', () => { reviewsPointerPaused = false; startReviewsAutoScroll(); }, { passive: true });
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) stopReviewsAutoScroll(); else startReviewsAutoScroll();
+            });
+        }
+
+        /* --- SCRIPT DU DIAPORAMA D'ARRIÈRE-PLAN --- */
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.bg-slide');
+
+        let nextSlide = function() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        };
+
+        let slideshowTimer = null;
+        function startSlideshow() {
+            if (slideshowTimer || slides.length < 2) return;
+            slideshowTimer = setInterval(nextSlide, 6000);
+        }
+        function stopSlideshow() {
+            if (!slideshowTimer) return;
+            clearInterval(slideshowTimer);
+            slideshowTimer = null;
+        }
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) stopSlideshow(); else startSlideshow();
+        });
+        startSlideshow();
+
+        window.onload = renderProducts;
+    </script>
+
+<script id="numero1-motion-script">
+(function(){
+  const intro=document.getElementById('iptvIntro');
+  if(intro){
+    let closed=false;
+    const closeIntro=()=>{if(closed)return;closed=true;intro.classList.add('iptv-intro-out');document.body.classList.remove('iptv-intro-lock');window.setTimeout(()=>intro.remove(),750)};
+    document.getElementById('iptvIntroSkip')?.addEventListener('click',closeIntro,{once:true});
+    window.setTimeout(closeIntro,2600);
+    window.addEventListener('keydown',e=>{if(e.key==='Escape')closeIntro()},{once:true});
+  }
+  const selectors='main section, body > section, .hero, .hero-banner, .trust-section, .catalog, .intro-description, .compatibility-section, .features-showcase, .tutorial-section, .reviews-section, .faq-section, footer, .product-card, .feature-card, .review-card, .faq-item';
+  const items=[...document.querySelectorAll(selectors)].filter((el,i,arr)=>arr.indexOf(el)===i);
+  items.forEach((el,i)=>{if(el.closest('#iptvIntro'))return;el.classList.add('motion-reveal');if(el.matches('.product-card,.feature-card,.review-card'))el.style.setProperty('--reveal-delay',((i%4)*65)+'ms')});
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');io.unobserve(entry.target)}}),{threshold:.08,rootMargin:'0px 0px -35px 0px'});
+    items.forEach(el=>io.observe(el));
+  }else items.forEach(el=>el.classList.add('is-visible'));
+  // Ne pas faire tourner le diaporama lorsque l'onglet est caché.
+  document.addEventListener('visibilitychange',()=>{document.documentElement.classList.toggle('iptv-tab-hidden',document.hidden)});
+  // La barre reste accessible, mais prend moins de place après quelques pixels de défilement.
+  const stickyHeader=document.querySelector('header');
+  const updateCompactHeader=()=>{if(stickyHeader)stickyHeader.classList.toggle('header-compact',window.scrollY>45)};
+  updateCompactHeader();
+  window.addEventListener('scroll',updateCompactHeader,{passive:true});
+})();
+</script>
+
+
+
+<script id="basic-content-protection">
+/* Dissuasion légère contre la copie : ce n'est pas une protection absolue du code source. */
+(function () {
+  const isEditable = (el) => !!el && (
+    el.isContentEditable ||
+    /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) ||
+    !!el.closest('[contenteditable="true"]')
+  );
+
+  // Désactive le menu contextuel sur la page, tout en le laissant disponible dans les champs.
+  document.addEventListener('contextmenu', function (event) {
+    if (!isEditable(event.target)) event.preventDefault();
+  });
+
+  // Empêche la sélection et le glisser-déposer du texte ordinaire, sans gêner les champs.
+  document.addEventListener('selectstart', function (event) {
+    if (!isEditable(event.target)) event.preventDefault();
+  });
+  document.addEventListener('dragstart', function (event) {
+    if (!isEditable(event.target) && !event.target.closest('a, button')) event.preventDefault();
+  });
+
+  // Bloque quelques raccourcis courants d'affichage/enregistrement du code et des outils développeur.
+  document.addEventListener('keydown', function (event) {
+    const key = (event.key || '').toLowerCase();
+    const editable = isEditable(event.target);
+    const ctrlOrCmd = event.ctrlKey || event.metaKey;
+    const devToolsShortcut =
+      event.key === 'F12' ||
+      (ctrlOrCmd && event.shiftKey && ['i', 'j', 'c'].includes(key)) ||
+      (ctrlOrCmd && !event.shiftKey && ['u', 's'].includes(key));
+
+    if (devToolsShortcut) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
+    if (!editable && ctrlOrCmd && ['c', 'x', 'a'].includes(key)) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }, true);
+
+  // Bloque aussi les commandes de copie/coupe via le menu ou les événements clavier.
+  document.addEventListener('copy', function (event) {
+    if (!isEditable(event.target)) event.preventDefault();
+  });
+  document.addEventListener('cut', function (event) {
+    if (!isEditable(event.target)) event.preventDefault();
+  });
+})();
+</script>
+
+</body>
+</html>
