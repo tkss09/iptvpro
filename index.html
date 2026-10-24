@@ -1976,7 +1976,7 @@ button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{tr
                                 </div>
                             </div>
                             <div class="product-footer">
-                                <div class="price-tag" id="price-${product.id}">${product.options[0].priceFormatted}</div>
+                                <div class="price-tag" id="price-${product.id}"><strong class="discount-price">0,00 €</strong></div>
                                 <button class="add-cart-btn" onclick="selectProductAndContact(${product.id})">Commander</button>
                             </div>
                         </div>
@@ -1990,7 +1990,7 @@ button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{tr
             const select = document.getElementById(`select-${productId}`);
             const priceEl = document.getElementById(`price-${productId}`);
             if (select.value === 'trial') {
-                priceEl.innerHTML = `<strong class="discount-price">Test 24 heures</strong>`;
+                priceEl.innerHTML = `<strong class="discount-price">0,00 €</strong>`;
                 return;
             }
             const selectedOption = product.options[select.value];
