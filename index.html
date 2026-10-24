@@ -2427,7 +2427,7 @@ function refreshHomeWithoutOpeningAnimation() {
     if (skip) {
         document.documentElement.classList.add('iptv-skip-opening-animation');
         const style = document.createElement('style');
-        style.textContent = 'html.iptv-skip-opening-animation *, html.iptv-skip-opening-animation *::before, html.iptv-skip-opening-animation *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }';
+        style.textContent = 'html.iptv-skip-opening-animation *, html.iptv-skip-opening-animation *::before, html.iptv-skip-opening-animation *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } html.iptv-skip-opening-animation #iptvIntro { display: none !important; } html.iptv-skip-opening-animation body.iptv-intro-lock { overflow: auto !important; }';
         document.head.appendChild(style);
         window.addEventListener('load', function () { window.scrollTo(0, 0); });
     }
