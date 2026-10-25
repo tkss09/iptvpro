@@ -1377,7 +1377,7 @@ button:active,.btn-primary:active,.btn-secondary:active,.nav-trial-btn:active{tr
 
 </head>
 <body class="iptv-intro-lock">
-    <div id="iptvIntro" role="status" aria-label="Ouverture IPTV Pro"><video id="iptvIntroVideo" class="iptv-intro-video" autoplay muted playsinline preload="auto" aria-hidden="true"><source src="iptv_intro_video.mp4" type="video/mp4"></video><div class="iptv-intro-video-shade"></div><div class="iptv-intro-content"><div class="iptv-intro-logo">IPTV <span>PRO</span></div><div class="iptv-intro-tag">TV • Séries • Films</div><div class="iptv-intro-line"></div></div><button type="button" id="iptvIntroSkip" style="position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:3;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:999px;padding:9px 13px;font:600 12px inherit;cursor:pointer">Passer l’intro</button></div>
+    <div id="iptvIntro" role="status" aria-label="Ouverture IPTV Pro"><video id="iptvIntroVideo" class="iptv-intro-video" autoplay muted playsinline preload="auto" aria-hidden="true"><source src="27408-363524251.mp4" type="video/mp4"></video><div class="iptv-intro-video-shade"></div><div class="iptv-intro-content"><div class="iptv-intro-logo">IPTV <span>PRO</span></div><div class="iptv-intro-tag">TV • Séries • Films</div><div class="iptv-intro-line"></div></div><button type="button" id="iptvIntroSkip" style="position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:3;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:999px;padding:9px 13px;font:600 12px inherit;cursor:pointer">Passer l’intro</button></div>
 
 
     <!-- Diaporama d'arrière-plan animé -->
@@ -2319,9 +2319,15 @@ Merci de m'indiquer les étapes pour recevoir mon test.`;
     const closeIntro=()=>{if(closed)return;closed=true;intro.classList.add('iptv-intro-out');document.body.classList.remove('iptv-intro-lock');window.setTimeout(()=>intro.remove(),750)};
     document.getElementById('iptvIntroSkip')?.addEventListener('click',closeIntro,{once:true});
     const introVideo=document.getElementById('iptvIntroVideo');
-    // L’intro suit la vidéo courte ; une sécurité ferme l’écran même si la lecture échoue.
-    if(introVideo){introVideo.addEventListener('ended',closeIntro,{once:true});introVideo.play().catch(()=>{});}
-    window.setTimeout(closeIntro,6200);
+    // La vidéo envoyée par l'utilisateur sert de fond et joue jusqu'à la fin.
+    // Si elle ne peut pas être lue, on ferme l'intro après un délai de secours.
+    let fallbackTimer=window.setTimeout(closeIntro,12000);
+    if(introVideo){
+      introVideo.addEventListener('playing',()=>window.clearTimeout(fallbackTimer),{once:true});
+      introVideo.addEventListener('ended',closeIntro,{once:true});
+      introVideo.addEventListener('error',()=>{fallbackTimer=window.setTimeout(closeIntro,12000)},{once:true});
+      introVideo.play().catch(()=>{});
+    }
     window.addEventListener('keydown',e=>{if(e.key==='Escape')closeIntro()},{once:true});
   }
   const selectors='main section, body > section, .hero, .hero-banner, .trust-section, .catalog, .intro-description, .compatibility-section, .features-showcase, .tutorial-section, .reviews-section, .faq-section, footer, .product-card, .feature-card, .review-card, .faq-item';
